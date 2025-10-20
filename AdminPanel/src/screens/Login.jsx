@@ -31,20 +31,50 @@ export default function Login() {
   return (
     <div className="App">
       <header className="App-header" role="main">
-        <h2>Admin Login</h2>
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 8, minWidth: 300 }}>
-          <input aria-label="Email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
-          <input aria-label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" />
-          <select aria-label="Role" value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="superadmin">superadmin</option>
-            <option value="admin">admin</option>
-            <option value="trainer_manager">trainer_manager</option>
-            <option value="content_admin">content_admin</option>
-            <option value="auditor">auditor</option>
-          </select>
-          {error && <div style={{ color: 'tomato' }}>{error}</div>}
-          <button className="theme-toggle" type="submit">Login</button>
+        <h2 style={{ marginBottom: 16 }}>Smart Gym Admin Login</h2>
+        <p style={{ fontSize: 14, opacity: 0.8, marginBottom: 24, maxWidth: 350 }}>
+          Sign in with your admin credentials. In mock mode, any email/password combination works.
+        </p>
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12, minWidth: 320 }}>
+          <input 
+            aria-label="Email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            placeholder="Email address" 
+            style={{ padding: 10, borderRadius: 6 }}
+          />
+          <input 
+            aria-label="Password" 
+            type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            placeholder="Password" 
+            style={{ padding: 10, borderRadius: 6 }}
+          />
+          <label style={{ fontSize: 14, textAlign: 'left' }}>
+            Select Role:
+            <select 
+              aria-label="Role" 
+              value={role} 
+              onChange={(e) => setRole(e.target.value)}
+              style={{ width: '100%', padding: 10, borderRadius: 6, marginTop: 4 }}
+            >
+              <option value="superadmin">Super Admin (Full Access)</option>
+              <option value="admin">Admin (User & Trainer Management)</option>
+              <option value="trainer_manager">Trainer Manager</option>
+              <option value="content_admin">Content Admin</option>
+              <option value="auditor">Auditor (View Only)</option>
+            </select>
+          </label>
+          {error && <div style={{ color: 'tomato', fontSize: 14 }}>{error}</div>}
+          <button className="theme-toggle" type="submit" style={{ marginTop: 8 }}>
+            Sign In
+          </button>
         </form>
+        <div style={{ marginTop: 24, padding: 16, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 8, fontSize: 13, maxWidth: 350 }}>
+          <strong>💡 Quick Start:</strong> Use any email (e.g., admin@example.com) and password. 
+          Select a role to see different access levels in the dashboard.
+        </div>
       </header>
     </div>
   );

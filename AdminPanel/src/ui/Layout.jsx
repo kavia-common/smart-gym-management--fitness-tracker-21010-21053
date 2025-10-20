@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Footer from '../components/Footer';
 import './layout.css';
 
 /**
@@ -16,7 +17,7 @@ export function Layout() {
       <aside className="sidebar">
         <div className="brand">Smart Gym Admin</div>
         <nav className="nav">
-          <NavLink to="/" end>Dashboard</NavLink>
+          <NavLink to="/dashboard">Dashboard</NavLink>
           <NavLink to="/users">Users</NavLink>
           <NavLink to="/trainers">Trainers</NavLink>
           <NavLink to="/content">Content</NavLink>
@@ -36,6 +37,7 @@ export function Layout() {
         <section className="content">
           <Outlet />
         </section>
+        <Footer />
       </main>
     </div>
   );
