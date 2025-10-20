@@ -1,82 +1,46 @@
-# Lightweight React Template for KAVIA
+# AdminPanel - Smart Gym Management
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+Dedicated interface for admins to manage users, trainers, content, and system settings. Includes role-based guards, a Sidebar/Topbar layout, mock API, optional Supabase realtime, and environment-based configuration.
 
-## Features
+## Quick start
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- Install: `npm install`
+- Run dev: `PORT=3001 npm start`
+- Open: http://localhost:3001
 
-## Getting Started
+Default login uses a mock auth flow. Choose a role on the login screen.
 
-In the project directory, you can run:
+## Routes
 
-### `npm start`
+- `/login` unauthenticated login
+- `/` Dashboard (protected)
+- `/users` (roles: admin, superadmin)
+- `/trainers` (roles: admin, trainer_manager, superadmin)
+- `/content` (roles: admin, content_admin, superadmin)
+- `/settings` (roles: superadmin)
+- `/audits` (roles: auditor, superadmin)
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Guards:
+- ProtectedRoute redirects unauthenticated users to `/login`
+- RoleGate redirects unauthorized roles back to `/`
 
-### `npm test`
+## Environment variables
 
-Launches the test runner in interactive watch mode.
+See `.env.example`. Set in your environment or create a `.env` file.
 
-### `npm run build`
+- REACT_APP_API_BASE_URL: Backend API base path (default `/api`)
+- REACT_APP_USE_MOCK_API: Enable mock API instead of fetch (default `true`)
+- REACT_APP_FEATURE_REALTIME: Toggle Supabase realtime (default `false`)
+- REACT_APP_SUPABASE_URL: Supabase URL
+- REACT_APP_SUPABASE_ANON_KEY: Supabase anon key
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Supabase
 
-## Customization
+Shared client in `src/services/supabaseClient.js`. Realtime helper in `src/services/realtime.js`.
 
-### Colors
+## Development notes
 
-The main brand colors are defined as CSS variables in `src/App.css`:
+- Dev server runs on port 3001 (see package.json)
+- The original template `App` component remains for tests but routing entry is `src/router/AppRouter.jsx`
+- Minimal CSS is in `src/App.css` and `src/ui/layout.css`
 
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
-```
-
-### Components
-
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
-
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
-
-## Learn More
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
