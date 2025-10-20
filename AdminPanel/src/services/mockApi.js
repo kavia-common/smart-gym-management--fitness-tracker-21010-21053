@@ -1,16 +1,40 @@
-const data = {
-  '/stats': { users: 1200, trainers: 24, activeToday: 310 },
-  '/users': [{ id: 1, email: 'member1@gym.com' }, { id: 2, email: 'member2@gym.com' }],
-};
+const delay = Number(process.env.REACT_APP_MOCK_API_DELAY_MS || 300);
+const SHOULD_ERROR = String(process.env.REACT_APP_MOCK_API_ERROR || 'false').toLowerCase() === 'true';
 
-/**
- * PUBLIC_INTERFACE
- */
-// PUBLIC_INTERFACE
-export async function mockApi(path, options = {}) {
-  /** Simple in-memory mock API */
-  await new Promise((r) => setTimeout(r, 150));
-  if (path in data) return JSON.parse(JSON.stringify(data[path]));
-  // default echo
-  return { path, method: options.method || 'GET', ok: true };
+let users = [
+  { id: 'u1', email: 'admin@example.com', role: 'admin' },
+  { id: 'u2', email: 'trainer@example.com', role: 'trainer' },
+];
+
+let auditLogs = [
+  { id: 'a1', ts: Date.now(), actor: 'admin@example.com', action: 'LOGIN' },
+];
+
+function wait(ms = delay) {
+  return new Promise(res => setTimeout(res, ms));
 }
+
+function maybeThrow() {
+  if (SHOULD_ERROR) throw new Error('Mock API error (simulated)');
+}
+
+// PUBLIC_INTERFACE
+export const mockApi = {
+  async getUsers() {
+    await wait();
+    maybeThrow();
+    return [...users];
+  },
+  async createUser(user) {
+    await wait();
+    maybeThrow();
+    const item = { id: `u${Date.now()}`, ...user };
+    users = [item, ...users];
+    return item;
+  },
+  async getAuditLogs() {
+    await wait();
+    maybeThrow();
+    return [...auditLogs];
+  }
+};

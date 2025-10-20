@@ -1,48 +1,85 @@
-import { useFlags } from '../contexts/FeatureFlagsContext';
 import { mockApi } from './mockApi';
 
+const USE_MOCK = String(process.env.REACT_APP_USE_MOCK_API || 'true').toLowerCase() === 'true';
+const BASE_URL = process.env.REACT_APP_ADMIN_API_BASE_URL || '';
+
 /**
+ * Wrap any async call and return { data, error }.
  * PUBLIC_INTERFACE
  */
-// PUBLIC_INTERFACE
-export function createApiClient(getToken) {
-  /**
-   * Returns a minimal API client that uses fetch or mock API depending on flag.
-   * getToken: function to retrieve current auth token
-   */
-  const USE_MOCK = String(process.env.REACT_APP_USE_MOCK_API ?? 'true').toLowerCase() === 'true';
-
-  const base = process.env.REACT_APP_API_BASE_URL || '/api';
-
-  async function request(path, options = {}) {
-    if (USE_MOCK) {
-      return mockApi(path, options);
-    }
-    const headers = new Headers(options.headers || {});
-    const token = getToken?.();
-    if (token) headers.set('Authorization', `Bearer ${token}`);
-    headers.set('Content-Type', 'application/json');
-
-    const res = await fetch(`${base}${path}`, {
-      ...options,
-      headers,
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw new Error(text || `Request failed ${res.status}`);
-    }
-    const contentType = res.headers.get('content-type') || '';
-    return contentType.includes('application/json') ? res.json() : res.text();
+export async function wrap(promise) {
+  try {
+    const data = await promise;
+    return { data, error: null };
+  } catch (e) {
+    return { data: null, error: e?.message || 'Unknown error' };
   }
-
-  return {
-    // PUBLIC_INTERFACE
-    get: (p) => request(p, { method: 'GET' }),
-    // PUBLIC_INTERFACE
-    post: (p, body) => request(p, { method: 'POST', body: JSON.stringify(body) }),
-    // PUBLIC_INTERFACE
-    put: (p, body) => request(p, { method: 'PUT', body: JSON.stringify(body) }),
-    // PUBLIC_INTERFACE
-    del: (p) => request(p, { method: 'DELETE' }),
-  };
 }
+
+/**
+ * Low-level request helper for real API only.
+ */
+async function request(method, path, body) {
+  if (USE_MOCK) throw new Error('Mock layer in use');
+  const url = `${BASE_URL}${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const isJson = res.headers.get('content-type')?.includes('application/json');
+  const payload = isJson ? await res.json() : await res.text();
+  if (!res.ok) {
+    const msg = (isJson && payload?.message) || res.statusText || 'Request failed';
+    throw new Error(msg);
+  }
+  return payload;
+}
+
+// PUBLIC_INTERFACE
+export const apiClient = {
+  // PUBLIC_INTERFACE
+  async get(path) {
+    return wrap(request('GET', path));
+  },
+  // PUBLIC_INTERFACE
+  async post(path, body) {
+    return wrap(request('POST', path, body));
+  },
+  // PUBLIC_INTERFACE
+  async put(path, body) {
+    return wrap(request('PUT', path, body));
+  },
+  // PUBLIC_INTERFACE
+  async delete(path) {
+    return wrap(request('DELETE', path));
+  },
+
+  // Domain convenience methods (examples for admin flows)
+  async getUsers() {
+    if (USE_MOCK) {
+      const { data } = await wrap(mockApi.getUsers());
+      return data || [];
+    }
+    const { data, error } = await this.get('/admin/users');
+    return error ? [] : (data || []);
+  },
+
+  async createUser(user) {
+    if (USE_MOCK) {
+      const { data } = await wrap(mockApi.createUser(user));
+      return data;
+    }
+    const { data } = await this.post('/admin/users', user);
+    return data;
+  },
+
+  async getAuditLogs() {
+    if (USE_MOCK) {
+      const { data } = await wrap(mockApi.getAuditLogs());
+      return data || [];
+    }
+    const { data, error } = await this.get('/admin/audit');
+    return error ? [] : (data || []);
+  }
+};

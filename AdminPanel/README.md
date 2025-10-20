@@ -1,46 +1,31 @@
-# AdminPanel - Smart Gym Management
+# AdminPanel - Smart Gym
 
-Dedicated interface for admins to manage users, trainers, content, and system settings. Includes role-based guards, a Sidebar/Topbar layout, mock API, optional Supabase realtime, and environment-based configuration.
+This React app provides administrative capabilities to manage users, trainers, content, and settings. It follows the same API client interface as WebFrontend.
 
-## Quick start
+## Run
 
-- Install: `npm install`
-- Run dev: `PORT=3001 npm start`
-- Open: http://localhost:3001
+- Copy `.env.example` to `.env` and adjust as needed. Defaults are safe.
+- Install dependencies:
+  npm install
+- Start dev server (port 3001):
+  npm start
 
-Default login uses a mock auth flow. Choose a role on the login screen.
+Port: 3001
 
-## Routes
+## Environment (.env.example keys)
+- REACT_APP_ADMIN_API_BASE_URL=https://your-backend.example.com
+- REACT_APP_USE_MOCK_API=true
+- REACT_APP_FEATURE_REALTIME=false
+- REACT_APP_FEATURE_AUDIT_HOOKS=true
+- REACT_APP_MOCK_API_DELAY_MS=300
+- REACT_APP_MOCK_API_ERROR=false
 
-- `/login` unauthenticated login
-- `/` Dashboard (protected)
-- `/users` (roles: admin, superadmin)
-- `/trainers` (roles: admin, trainer_manager, superadmin)
-- `/content` (roles: admin, content_admin, superadmin)
-- `/settings` (roles: superadmin)
-- `/audits` (roles: auditor, superadmin)
+## API client
+- Core methods available: { get, post, put, delete } returning { data, error }.
+- Domain helpers use the same normalized error handling.
+- Toggle between Mock vs Real API via REACT_APP_USE_MOCK_API.
 
-Guards:
-- ProtectedRoute redirects unauthenticated users to `/login`
-- RoleGate redirects unauthorized roles back to `/`
-
-## Environment variables
-
-See `.env.example`. Set in your environment or create a `.env` file.
-
-- REACT_APP_API_BASE_URL: Backend API base path (default `/api`)
-- REACT_APP_USE_MOCK_API: Enable mock API instead of fetch (default `true`)
-- REACT_APP_FEATURE_REALTIME: Toggle Supabase realtime (default `false`)
-- REACT_APP_SUPABASE_URL: Supabase URL
-- REACT_APP_SUPABASE_ANON_KEY: Supabase anon key
-
-## Supabase
-
-Shared client in `src/services/supabaseClient.js`. Realtime helper in `src/services/realtime.js`.
-
-## Development notes
-
-- Dev server runs on port 3001 (see package.json)
-- The original template `App` component remains for tests but routing entry is `src/router/AppRouter.jsx`
-- Minimal CSS is in `src/App.css` and `src/ui/layout.css`
+## Feature Flags
+- REACT_APP_FEATURE_REALTIME=false: Enable realtime usage where applicable.
+- REACT_APP_FEATURE_AUDIT_HOOKS=true: Show/enable audit log related UX.
 
